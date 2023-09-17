@@ -7,3 +7,18 @@ const (
 	NotAuthorizedErrCode
 	BadRequestErrCode
 )
+
+// repositories
+const (
+	QueryInternalServerErrCode = 2001 + iota
+	QueryNotFoundErrCode
+)
+
+// user
+const (
+	RegisterEmailNotAvailableErrCode = 3001 + iota
+	RegisterUsernameNotAvailableErrCode
+	HashPasswordInternalErrCode
+	LoginUsernameNotFoundErrCode
+	LoginInvalidPasswordErrCode
+)

@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/kidboy-man/mini-bank-rest/configs"
 	"github.com/kidboy-man/mini-bank-rest/databases"
+	"github.com/kidboy-man/mini-bank-rest/routers"
 )
 
 func main() {
@@ -20,13 +19,6 @@ func main() {
 		panic(err)
 	}
 
-	r := gin.Default()
-	r.ForwardedByClientIP = true
-	r.SetTrustedProxies([]string{"127.0.0.1"})
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run(fmt.Sprintf("localhost:%s", configs.AppConfig.AppPort))
+	server := routers.Setup()
+	server.Run(fmt.Sprintf(":%s", configs.AppConfig.AppPort))
 }

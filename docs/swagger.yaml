@@ -1,0 +1,36 @@
+definitions:
+  models.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      token:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - username
+    type: object
+info:
+  contact: {}
+paths:
+  /users:
+    get:
+      description: Returns the user who matches the username.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Get One User
+      tags:
+      - users
+swagger: "2.0"
