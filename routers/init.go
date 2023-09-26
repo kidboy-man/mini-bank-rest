@@ -12,12 +12,18 @@ func Setup() (r *gin.Engine) {
 	r = gin.Default()
 	r.ForwardedByClientIP = true
 	docs.SwaggerInfo.BasePath = ""
-
-	upc := controllers.UserPublicController{}
-	upc.Prepare()
-
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	r.GET("/users/:username", upc.GetUser)
+	v1 := r.Group("/v1")
+
+	publicUserRoute := v1.Group("/public/users")
+	upc := controllers.UserPublicController{}
+	upc.Prepare()
+	publicUserRoute.GET("/:username", upc.GetUser)
+
+	publicAuthRoute := v1.Group("/public/auth")
+	apc := controllers.AuthPublicController{}
+	apc.Prepare()
+	publicAuthRoute.POST("/register", apc.Register)
 	return
 }

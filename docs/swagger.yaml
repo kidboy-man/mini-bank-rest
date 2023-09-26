@@ -17,10 +17,58 @@ definitions:
     - email
     - username
     type: object
+  schemas.GeneralResponse:
+    properties:
+      code:
+        type: string
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  schemas.Register:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - name
+    - password
+    - username
+    type: object
 info:
   contact: {}
 paths:
-  /users:
+  /v1/public/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register user to our system account.
+      parameters:
+      - description: user registration data
+        in: body
+        name: registrationData
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.Register'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/schemas.GeneralResponse'
+      summary: Register
+      tags:
+      - authentication
+  /v1/public/users/{username}:
     get:
       description: Returns the user who matches the username.
       produces:

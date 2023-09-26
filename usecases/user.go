@@ -47,3 +47,8 @@ func (u *userUsecase) Delete(ctx context.Context, userID uint) (err error) {
 	err = u.userRepo.Delete(ctx, u.db, userID)
 	return
 }
+
+func (u *userUsecase) Register(ctx context.Context) (err error) {
+	// TODO
+	return
+}

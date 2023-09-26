@@ -23,7 +23,7 @@ func (c *UserPublicController) Prepare() {
 // @Tags         users
 // @Produce      json
 // @Success      200  {object}  models.User
-// @Router       /users/{username} [get]
+// @Router       /v1/public/users/{username} [get]
 func (upc *UserPublicController) GetUser(c *gin.Context) {
 	username := c.Param("username")
 	user, err := upc.userUsecase.GetByUsername(c.Request.Context(), username)
