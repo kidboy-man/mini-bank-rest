@@ -86,7 +86,7 @@ func (r *userRepo) Delete(ctx context.Context, db *gorm.DB, userID uint) (err er
 }
 
 func (r *userRepo) GetByUsername(ctx context.Context, username string) (user *models.User, err error) {
-	qs := r.db.Where("username = ?", username)
+	qs := r.db.Where("username ILIKE ?", username)
 	err = qs.First(&user).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

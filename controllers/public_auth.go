@@ -35,5 +35,11 @@ func (apc *AuthPublicController) Register(c *gin.Context) {
 		return
 	}
 
+	err = apc.userUsecase.Register(c.Request.Context(), &registration)
+	if err != nil {
+		apc.ReturnNotOK(c, err)
+		return
+	}
+
 	apc.ReturnOK(c, http.StatusCreated, "registration success", nil)
 }
