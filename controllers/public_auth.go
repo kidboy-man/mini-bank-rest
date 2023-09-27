@@ -67,5 +67,5 @@ func (apc *AuthPublicController) Login(c *gin.Context) {
 		return
 	}
 
-	apc.ReturnOK(c, http.StatusCreated, "login successful", user)
+	apc.ReturnOK(c, http.StatusOK, "login successful", user)
 }
