@@ -117,15 +117,11 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "email",
-                "name",
                 "password",
                 "username"
             ],
             "properties": {
                 "email": {
-                    "type": "string"
-                },
-                "name": {
                     "type": "string"
                 },
                 "password": {

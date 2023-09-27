@@ -31,15 +31,12 @@ definitions:
     properties:
       email:
         type: string
-      name:
-        type: string
       password:
         type: string
       username:
         type: string
     required:
     - email
-    - name
     - password
     - username
     type: object

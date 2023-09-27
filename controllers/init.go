@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/kidboy-man/mini-bank-rest/constants"
 	"github.com/kidboy-man/mini-bank-rest/schemas"
 )
 
@@ -23,15 +25,27 @@ func (c *Controllers) ReturnOK(ctx *gin.Context, httpStatus int, message string,
 }
 
 func (c *Controllers) ReturnNotOK(ctx *gin.Context, err error) {
-	message := err.Error()
-	code := "5000005"
-	httpStatus := http.StatusInternalServerError
-	if v, ok := err.(*schemas.CustomError); ok {
-		message = v.Error()
-		code = fmt.Sprintf("%d%d", v.HTTPStatus, v.Code)
-		httpStatus = v.HTTPStatus
+	var message string
+	var code string
+	var httpStatus int
 
+	switch err := err.(type) {
+	case *schemas.CustomError:
+		message = err.Error()
+		httpStatus = err.HTTPStatus
+		code = fmt.Sprintf("%d%d", httpStatus, err.Code)
+
+	case validator.ValidationErrors:
+		message = err.Error()
+		httpStatus = http.StatusBadRequest
+		code = fmt.Sprintf("%d%d", httpStatus, constants.BadRequestErrCode)
+
+	default:
+		message = err.Error()
+		httpStatus = http.StatusInternalServerError
+		code = fmt.Sprintf("%d%d", httpStatus, constants.InternalServerErrCode)
 	}
+
 	ctx.JSON(httpStatus, gin.H{
 		"success": false,
 		"code":    code,
