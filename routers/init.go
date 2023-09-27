@@ -25,5 +25,6 @@ func Setup() (r *gin.Engine) {
 	apc := controllers.AuthPublicController{}
 	apc.Prepare()
 	publicAuthRoute.POST("/register", apc.Register)
+	publicAuthRoute.POST("login", apc.Login)
 	return
 }

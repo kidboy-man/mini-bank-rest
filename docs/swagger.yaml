@@ -27,6 +27,16 @@ definitions:
       success:
         type: boolean
     type: object
+  schemas.Login:
+    properties:
+      identifier:
+        type: string
+      password:
+        type: string
+    required:
+    - identifier
+    - password
+    type: object
   schemas.Register:
     properties:
       email:
@@ -43,6 +53,28 @@ definitions:
 info:
   contact: {}
 paths:
+  /v1/public/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user to our system account.
+      parameters:
+      - description: user credential
+        in: body
+        name: credential
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schemas.GeneralResponse'
+      summary: Login
+      tags:
+      - authentication
   /v1/public/auth/register:
     post:
       consumes:

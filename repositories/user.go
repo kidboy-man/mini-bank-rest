@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/kidboy-man/mini-bank-rest/constants"
 	"github.com/kidboy-man/mini-bank-rest/models"
@@ -14,6 +15,7 @@ import (
 type UserRepo interface {
 	Create(ctx context.Context, db *gorm.DB, user *models.User) (err error)
 	Delete(ctx context.Context, db *gorm.DB, userID uint) (err error)
+	GetByEmail(ctx context.Context, email string) (user *models.User, err error)
 	GetByUsername(ctx context.Context, username string) (user *models.User, err error)
 	Update(ctx context.Context, db *gorm.DB, user *models.User) (err error)
 }
@@ -87,6 +89,28 @@ func (r *userRepo) Delete(ctx context.Context, db *gorm.DB, userID uint) (err er
 
 func (r *userRepo) GetByUsername(ctx context.Context, username string) (user *models.User, err error) {
 	qs := r.db.Where("username ILIKE ?", username)
+	err = qs.First(&user).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = &schemas.CustomError{
+				Code:       constants.QueryNotFoundErrCode,
+				HTTPStatus: http.StatusNotFound,
+				Message:    err.Error(),
+			}
+			return nil, err
+		}
+		err = &schemas.CustomError{
+			Code:       constants.InternalServerErrCode,
+			HTTPStatus: http.StatusInternalServerError,
+			Message:    err.Error(),
+		}
+		return nil, err
+	}
+	return
+}
+
+func (r *userRepo) GetByEmail(ctx context.Context, email string) (user *models.User, err error) {
+	qs := r.db.Where("email = ?", strings.ToLower(strings.TrimSpace(email)))
 	err = qs.First(&user).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

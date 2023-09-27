@@ -10,6 +10,7 @@ import (
 	"github.com/kidboy-man/mini-bank-rest/models"
 	"github.com/kidboy-man/mini-bank-rest/repositories"
 	"github.com/kidboy-man/mini-bank-rest/schemas"
+	"github.com/kidboy-man/mini-bank-rest/utils"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +18,8 @@ type UserUsecase interface {
 	Create(ctx context.Context, user *models.User) (err error)
 	Delete(ctx context.Context, userID uint) (err error)
 	GetByUsername(ctx context.Context, username string) (user *models.User, err error)
-	Register(ctx context.Context, param *schemas.Register) (err error)
+	Login(ctx context.Context, param schemas.Login) (user *models.User, err error)
+	Register(ctx context.Context, param schemas.Register) (err error)
 	Update(ctx context.Context, user *models.User) (err error)
 }
 
@@ -54,7 +56,7 @@ func (u *userUsecase) Delete(ctx context.Context, userID uint) (err error) {
 	return
 }
 
-func (u *userUsecase) Register(ctx context.Context, param *schemas.Register) (err error) {
+func (u *userUsecase) Register(ctx context.Context, param schemas.Register) (err error) {
 	param.Prepare()
 	hashedPassword, err := helpers.HashPassword(param.Password)
 	if err != nil {
@@ -71,7 +73,7 @@ func (u *userUsecase) Register(ctx context.Context, param *schemas.Register) (er
 			err = &schemas.CustomError{
 				Code:       constants.RegisterEmailNotAvailableErrCode,
 				HTTPStatus: http.StatusBadRequest,
-				Message:    "email is already taken",
+				Message:    "email address is already taken",
 			}
 		}
 
@@ -83,5 +85,45 @@ func (u *userUsecase) Register(ctx context.Context, param *schemas.Register) (er
 			}
 		}
 	}
+	return
+}
+
+func (u *userUsecase) Login(ctx context.Context, param schemas.Login) (user *models.User, err error) {
+	if utils.IsEmail(param.Identifier) {
+		user, err = u.userRepo.GetByEmail(ctx, param.Identifier)
+		if err != nil {
+			if err.Error() == gorm.ErrRecordNotFound.Error() {
+				err = &schemas.CustomError{
+					Code:       constants.LoginEmailNotFoundErrCode,
+					HTTPStatus: http.StatusBadRequest,
+					Message:    "email address is not registered",
+				}
+			}
+			return
+		}
+	} else {
+		user, err = u.userRepo.GetByUsername(ctx, param.Identifier)
+		if err != nil {
+			if err.Error() == gorm.ErrRecordNotFound.Error() {
+				err = &schemas.CustomError{
+					Code:       constants.LoginUsernameNotFoundErrCode,
+					HTTPStatus: http.StatusBadRequest,
+					Message:    "username is not registered",
+				}
+			}
+			return
+		}
+	}
+
+	if !helpers.CheckPasswordHash(param.Password, user.Password) {
+		err = &schemas.CustomError{
+			Code:       constants.LoginInvalidPasswordErrCode,
+			HTTPStatus: http.StatusBadRequest,
+			Message:    "invalid password",
+		}
+		return
+	}
+
+	// TODO: set token
 	return
 }

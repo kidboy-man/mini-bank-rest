@@ -20,5 +20,6 @@ const (
 	RegisterUsernameNotAvailableErrCode
 	HashPasswordInternalErrCode
 	LoginUsernameNotFoundErrCode
+	LoginEmailNotFoundErrCode
 	LoginInvalidPasswordErrCode
 )
