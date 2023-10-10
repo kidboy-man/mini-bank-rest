@@ -23,7 +23,7 @@ func CheckPasswordHash(password, hash string) bool {
 func GenerateToken(user *models.User) (result string, err error) {
 	claims := middlewares.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "simple-store-api",
+			Issuer:    "mini-bank-rest",
 			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(configs.AppConfig.JWTExpirationSecond)},
 		},
 		UserID:   user.ID,
