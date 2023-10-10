@@ -18,7 +18,7 @@ type User struct {
 	CreatedAt time.Time `gorm:"autoCreateTime;<-:create" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updatedAt"`
 
-	Token string `gorm:"-" json:"token"`
+	Token string `gorm:"-" json:"token,omitempty"`
 }
 
 func (User) TableName() string {

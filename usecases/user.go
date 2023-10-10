@@ -124,6 +124,6 @@ func (u *userUsecase) Login(ctx context.Context, param schemas.Login) (user *mod
 		return
 	}
 
-	// TODO: set token
+	user.Token, err = helpers.GenerateToken(user)
 	return
 }

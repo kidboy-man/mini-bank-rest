@@ -11,6 +11,10 @@ import (
 func Setup() (r *gin.Engine) {
 	r = gin.Default()
 	r.ForwardedByClientIP = true
+
+	// Recovery middleware recovers from any panics and writes a 500 if there was one.
+	r.Use(gin.Recovery())
+
 	docs.SwaggerInfo.BasePath = ""
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
