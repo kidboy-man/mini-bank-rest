@@ -4,6 +4,8 @@ import (
 	"errors"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
@@ -18,6 +20,14 @@ type Config struct {
 	DBUser       string
 	DBPassword   string
 	DBConnection *gorm.DB
+
+	JWTConfig
+}
+
+type JWTConfig struct {
+	JWTSignatureKey     string
+	JWTPublicKey        string
+	JWTExpirationSecond time.Duration
 }
 
 var AppConfig Config
@@ -65,5 +75,24 @@ func (c *Config) Setup() (err error) {
 		return
 	}
 
+	c.JWTSignatureKey = os.Getenv("JWT_SIGNATURE_KEY")
+	if c.JWTSignatureKey == "" {
+		err = errors.New("JWT_SIGNATURE_KEY is not set")
+		return
+	}
+
+	c.JWTPublicKey = os.Getenv("JWT_PUBLIC_KEY")
+	if c.JWTPublicKey == "" {
+		err = errors.New("JWT_PUBLIC_KEY is not set")
+		return
+	}
+
+	strJWTExpirationSecond := os.Getenv("JWT_EXPIRATION_SECOND")
+	jwtExpirationSecond, _ := strconv.Atoi(strJWTExpirationSecond)
+	if jwtExpirationSecond == 0 {
+		jwtExpirationSecond = 3600
+	}
+
+	c.JWTExpirationSecond = time.Duration(jwtExpirationSecond) * time.Second
 	return
 }
